@@ -10,6 +10,7 @@ import { Form } from "@/components/ui/form"
 import Link from "next/link"
 import { toast } from "sonner"
 import FormField from "@/components/formField"
+import { useRouter } from "next/navigation"
 
 const authFormSchema = (type: FormType) => {
     return z.object({
@@ -21,7 +22,7 @@ const authFormSchema = (type: FormType) => {
 
 const AuthForm = ({ type }: { type: FormType }) => {
     const isSignIn = type === "sign-in";
-
+    const router = useRouter();
     const formSchema = authFormSchema(type);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -36,11 +37,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
     function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             if (type === "sign-up") {
-                console.log("sign up", values)
+                toast.success("Account created successfully. Please sign in.")
+                router.push("/sign-in")
             } else {
-                console.log("sign in", values)
+                toast.success("Sign in successfully.")
+                router.push("/")
             }
-            toast.success(`${values}`)
         } catch (error) {
             console.log(error)
             toast.error(`Something went wrong : ${error}`)
