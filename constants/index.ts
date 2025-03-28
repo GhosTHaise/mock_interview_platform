@@ -1,4 +1,4 @@
-/* import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+//import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
 
 export const mappings = {
@@ -97,7 +97,7 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
-export const interviewer: CreateAssistantDTO = {
+/* export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:
     "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
@@ -153,7 +153,7 @@ End the conversation on a polite and positive note.
       },
     ],
   },
-};
+}; */
 
 export const feedbackSchema = z.object({
   totalScore: z.number(),
@@ -203,4 +203,18 @@ export const interviewCovers = [
   "/tiktok.png",
   "/yahoo.png",
 ];
- */
+
+export const dummyInterviews: Interview[] = [
+  {
+    id: "1",
+    userId : "user1",
+    role : "Frontend Developer",
+    type : "Technical",
+    techstack : ["React", "Next.js", "TailwindCSS"],
+    level : "junior",
+    questions : ["What is React?"],
+    finalized : false,
+    createdAt : "2025-03-01T00:00:00.000Z",
+    
+  }
+]
