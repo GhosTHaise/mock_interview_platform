@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import DisplayTechIcons from "./displayTechIcons";
 
 const InterviewCard = ({ createdAt, finalized, interviewId, level, questions, role, techstack, type, userId, }: InterviewCardProps) => {
     const feedback = null as Feedback | null;
@@ -34,7 +35,7 @@ const InterviewCard = ({ createdAt, finalized, interviewId, level, questions, ro
                     <p className="line-clamp-2 mt-4">{feedback?.finalAssessment || "You haven't taken the interview yet. Take it now to improve your skills."}</p>
                 </div>
                 <div className="flex flex-row justify-between w-full">
-                    <p>Tech Icons</p>
+                    <DisplayTechIcons techStack={techstack} />
                     <Button>
                         <Link href={feedback? `/interview/${interviewId}/feedback` : `/interview/${interviewId}`}>
                             {feedback ? "View Feedback" : "Take Interview"}
