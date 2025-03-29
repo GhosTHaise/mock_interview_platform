@@ -1,4 +1,6 @@
+import InterviewCard from '@/components/interviewCard'
 import { Button } from '@/components/ui/button'
+import { dummyInterviews } from '@/constants'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -23,6 +25,12 @@ const Page = () => {
         <h2>Your Interviews</h2>
 
         <div className="interviews-section">
+          {
+            dummyInterviews.map((interview) => (
+              <InterviewCard key={interview.id} {...interview}  />
+            ))
+          }
+
           <p>You haven&apos;t taken any interviews yet</p>
         </div>
       </section>
