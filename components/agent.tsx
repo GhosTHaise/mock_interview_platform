@@ -1,7 +1,8 @@
+import { cn } from '@/lib/utils';
 import Image from 'next/image'
 import React from 'react'
 
-enum callStatus {
+enum CALLSTATUS {
     INACTIVE = "INACTIVE",
     CONNECTING = "CONNECTING",
     ACTIVE = "ACTIVE",
@@ -12,6 +13,13 @@ const Agent = ({
     userName
 }: AgentProps) => {
     const isSpeaking = true;
+    const callStatus = CALLSTATUS.CONNECTING;
+    const messages = [
+        "Whats you name?",
+        "My name is John Doe, nice to meet you"
+    ];
+    const lastMessage = messages[messages.length - 1];
+
     return (
         <>
             <div className='call-view'>
@@ -34,12 +42,29 @@ const Agent = ({
                     </div>
                 </div>
             </div>
+            {
+                messages.length > 0 && (
+                    <div className="transcript-border">
+                        <div className="transcript">
+                            <p key={lastMessage} className={cn('transition-opacity duration-500 opacity-0','animate-fadeIn opacity-100')}>
+                                {lastMessage}
+                            </p>
+                        </div>
+                    </div>
+                )
+            }
             <div className="w-full flex justify-center">
                 {
                     callStatus !== "ACTIVE" ? (
-                        <button>
-                            <span>
+                        <button className='relative btn-call'>
+                            <span className={cn('absolute animate-ping rounded-full opacity-75', { "hidden": callStatus === "INACTIVE" })} />
+                            <span className=''>
+                                {callStatus === "INACTIVE" || callStatus !== "CONNECTING" ? "Call" : ". . ."}
                             </span>
+                        </button>
+                    ) : (
+                        <button className="btn-disconnect">
+                            End
                         </button>
                     )
                 }
