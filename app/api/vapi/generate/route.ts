@@ -1,5 +1,7 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
+import { getRandomInterviewCover } from "@/lib/utils";
+import { db } from "@/firebase/admin";
 
 export async function GET() {
     return Response.json({
@@ -35,6 +37,26 @@ export async function POST(request: Request) {
         Thank you! <3
     `,
         });
+
+
+        const interview = {
+            role,
+            type,
+            level,
+            techstack : techstack.split(","),
+            questions : JSON.parse(questions),
+            userId : userid,
+            finalized : true,
+            coverImage : getRandomInterviewCover(),
+            createdAt : new Date().toISOString()
+        }
+
+        await db.collection("interviews").add(interview);
+
+        return Response.json({
+            success: true,
+            data: interview
+        }, { status: 200 })
         
     } catch (error) {
         console.log(error);
