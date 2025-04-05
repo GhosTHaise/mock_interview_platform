@@ -29,6 +29,27 @@ const Agent = ({
     const [messages, setMessages] = useState<SavedMessage[]>([]);
 
     useEffect(() => {
+        if(callStatus === CALLSTATUS.FINISHED) router.push("/");
+    },[messages , callStatus , type , userId])
+
+    const handleCall = async () => {
+        setCallStatus(CALLSTATUS.CONNECTING);
+
+        await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+            variableValues : {
+                username : userName,
+                userId : userId
+            }
+        });
+    }
+
+    const handleDisconnect = async () => {
+        setCallStatus(CALLSTATUS.FINISHED);
+
+        vapi.stop()
+    }
+
+    useEffect(() => {
         const onCallStart = () => setCallStatus(CALLSTATUS.ACTIVE);
         const onCallEnd = () => setCallStatus(CALLSTATUS.INACTIVE);
 
