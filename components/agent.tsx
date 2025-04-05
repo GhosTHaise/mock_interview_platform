@@ -1,9 +1,10 @@
 "use client";
 
 import { cn } from '@/lib/utils';
+import { vapi } from '@/lib/vapi.sdk';
 import Image from 'next/image'
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 enum CALLSTATUS {
     INACTIVE = "INACTIVE",
@@ -26,6 +27,40 @@ const Agent = ({
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [callStatus, setCallStatus] = useState<CALLSTATUS>(CALLSTATUS.INACTIVE);
     const [messages, setMessages] = useState<SavedMessage[]>([]);
+
+    useEffect(() => {
+        const onCallStart = () => setCallStatus(CALLSTATUS.ACTIVE);
+        const onCallEnd = () => setCallStatus(CALLSTATUS.INACTIVE);
+
+        const onMessage = (message: Message) => {
+            if(message.type === 'transcript' && message.transcriptType === "final"){
+                const newMessage = {role : message.role , content : message.transcript}
+
+                setMessages((prev) => [...prev, newMessage]);
+            }
+        }
+
+        const onSpeechStart = () => setIsSpeaking(true);
+        const onSpeechEnd = () => setIsSpeaking(false);
+
+        const onError = (error : Error) => console.error(error);
+
+        vapi.on('call-start', onCallStart);
+        vapi.on('call-end', onCallEnd);
+        vapi.on('message', onMessage);
+        vapi.on('speech-start', onSpeechStart);
+        vapi.on('speech-end', onSpeechEnd);
+        vapi.on('error', onError);
+
+        return () => {
+            vapi.off('call-start', onCallStart);
+            vapi.off('call-end', onCallEnd);
+            vapi.off('message', onMessage);
+            vapi.off('speech-start', onSpeechStart);
+            vapi.off('speech-end', onSpeechEnd);
+            vapi.off('error', onError);
+        }
+    },[])
 
     const lastMessage = messages[messages.length - 1];
 
@@ -55,8 +90,8 @@ const Agent = ({
                 messages.length > 0 && (
                     <div className="transcript-border">
                         <div className="transcript">
-                            <p key={lastMessage} className={cn('transition-opacity duration-500 opacity-0','animate-fadeIn opacity-100')}>
-                                {lastMessage}
+                            <p key={lastMessage.content} className={cn('transition-opacity duration-500 opacity-0','animate-fadeIn opacity-100')}>
+                                {lastMessage.content}
                             </p>
                         </div>
                     </div>
