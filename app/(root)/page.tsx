@@ -1,15 +1,23 @@
 import InterviewCard from '@/components/interviewCard'
 import { Button } from '@/components/ui/button'
-import { getCurrentUser, getInterviewsByUserId } from '@/lib/actions/auth.action'
+import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/auth.action'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
 const Page = async () => {
   const user = await getCurrentUser();
-  const userInterviews = await getInterviewsByUserId(user?.id as string);
 
-  const hasPastInterviews = userInterviews?.length > 0;
+  const [userInterviews, latestInterviews] = await Promise.all([
+    await getInterviewsByUserId(user?.id as string),
+    await getLatestInterviews({
+      userId: user?.id as string
+    })
+  ])
+
+  const hasPastInterviews = !!(userInterviews?.length);
+  const hasUpcomingInterviews = !!(latestInterviews?.length);
+
   return (
     <>
       <section className="card-cta">
@@ -44,7 +52,16 @@ const Page = async () => {
       <section className="flex flex-col gap-6 mt-8">
         <h2>take an Interview</h2>
         <div className="interviews-section">
-          <p>There are no intervies available</p>
+          {
+            hasUpcomingInterviews ? (
+              latestInterviews?.map((interview) => (
+                <InterviewCard key={interview.id} {...interview} />
+              ))
+            ) : (
+              <p>You haven&apos;t taken any interviews yet</p>
+            )
+          }
+          <p>There are no new interviews available</p>
         </div>
       </section>
     </>
