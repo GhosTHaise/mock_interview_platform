@@ -1,5 +1,6 @@
 "use client";
 
+import { interviewer } from '@/constants';
 import { cn } from '@/lib/utils';
 import { vapi } from '@/lib/vapi.sdk';
 import Image from 'next/image'
@@ -14,33 +15,72 @@ enum CALLSTATUS {
 }
 
 interface SavedMessage {
-    role : "user" | "system" | "assistant";
-    content : string
+    role: "user" | "system" | "assistant";
+    content: string
 }
 
 const Agent = ({
     userName,
     userId,
-    type
+    type,
+    interviewId,
+    questions
 }: AgentProps) => {
     const router = useRouter();
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [callStatus, setCallStatus] = useState<CALLSTATUS>(CALLSTATUS.INACTIVE);
     const [messages, setMessages] = useState<SavedMessage[]>([]);
 
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+        console.log("Generate feedback here.");
+
+        //TODO : server action that generates feedback
+        const { success, id } = {
+            success: true,
+            id: "feedback-id"
+        }
+
+        if (success && id) {
+            router.push(`interview/${interviewId}/feedback`)
+        } else {
+            console.log("Error saving feedback");
+            router.push("/");
+        }
+    }
+
     useEffect(() => {
-        if(callStatus === CALLSTATUS.FINISHED) router.push("/");
-    },[messages , callStatus , type , userId])
+        if (callStatus === CALLSTATUS.FINISHED) {
+            if (type === "generate") router.push("/");
+            else {
+                handleGenerateFeedback(messages)
+            }
+        }
+
+    }, [messages, callStatus, type, userId])
 
     const handleCall = async () => {
         setCallStatus(CALLSTATUS.CONNECTING);
 
-        await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-            variableValues : {
-                username : userName,
-                userId : userId
+        if (type === "generate") {
+            await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+                variableValues: {
+                    username: userName,
+                    userId: userId
+                }
+            });
+        }else{
+            let formattedQuestions  = "";
+
+            if(questions){
+                formattedQuestions = questions.map((question) => `- ${question}`).join('/n');
             }
-        });
+
+            await vapi.start(interviewer, {
+                variableValues : {
+                    questions : formattedQuestions,
+                }
+            })
+        }
     }
 
     const handleDisconnect = async () => {
@@ -54,8 +94,8 @@ const Agent = ({
         const onCallEnd = () => setCallStatus(CALLSTATUS.INACTIVE);
 
         const onMessage = (message: Message) => {
-            if(message.type === 'transcript' && message.transcriptType === "final"){
-                const newMessage = {role : message.role , content : message.transcript}
+            if (message.type === 'transcript' && message.transcriptType === "final") {
+                const newMessage = { role: message.role, content: message.transcript }
 
                 setMessages((prev) => [...prev, newMessage]);
             }
@@ -64,7 +104,7 @@ const Agent = ({
         const onSpeechStart = () => setIsSpeaking(true);
         const onSpeechEnd = () => setIsSpeaking(false);
 
-        const onError = (error : Error) => console.error(error);
+        const onError = (error: Error) => console.error(error);
 
         vapi.on('call-start', onCallStart);
         vapi.on('call-end', onCallEnd);
@@ -81,7 +121,7 @@ const Agent = ({
             vapi.off('speech-end', onSpeechEnd);
             vapi.off('error', onError);
         }
-    },[])
+    }, [])
 
     const lastMessage = messages[messages.length - 1]?.content;
     const isCallInactiveOrFinished = callStatus === CALLSTATUS.INACTIVE || callStatus === CALLSTATUS.FINISHED;
@@ -112,7 +152,7 @@ const Agent = ({
                 messages.length > 0 && (
                     <div className="transcript-border">
                         <div className="transcript">
-                            <p key={lastMessage} className={cn('transition-opacity duration-500 opacity-0','animate-fadeIn opacity-100')}>
+                            <p key={lastMessage} className={cn('transition-opacity duration-500 opacity-0', 'animate-fadeIn opacity-100')}>
                                 {lastMessage}
                             </p>
                         </div>
