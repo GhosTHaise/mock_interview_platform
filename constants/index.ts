@@ -1,4 +1,5 @@
 //import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
 
 export const mappings = {
@@ -97,7 +98,7 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
-/* export const interviewer: CreateAssistantDTO = {
+export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:
     "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
@@ -153,7 +154,7 @@ End the conversation on a polite and positive note.
       },
     ],
   },
-}; */
+};
 
 export const feedbackSchema = z.object({
   totalScore: z.number(),
