@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./displayTechIcons";
 
-const InterviewCard = ({ createdAt, finalized, interviewId, level, questions, role, techstack, type, userId, }: InterviewCardProps) => {
+const InterviewCard = ({ createdAt, finalized, id, level, questions, role, techstack, type, userId, }: InterviewCardProps) => {
     const feedback = null as Feedback | null;
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
     const formattedDAte = dayjs(feedback?.createdAt || createdAt || Date.now()).format("MMM D, YYYY");
@@ -14,7 +14,7 @@ const InterviewCard = ({ createdAt, finalized, interviewId, level, questions, ro
             <div className="card-interview">
                 <div>
                     <div className="absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-600">
-                        <p className="badge-text">normalizedType</p>
+                        <p className="badge-text">{normalizedType}</p>
                     </div>
 
                     <Image loading="lazy" src={getRandomInterviewCover()} alt="cover" width={90} height={90} className="rounded-full object-fit size-[90px]"/>
@@ -37,7 +37,7 @@ const InterviewCard = ({ createdAt, finalized, interviewId, level, questions, ro
                 <div className="flex flex-row justify-between w-full">
                     <DisplayTechIcons techStack={techstack} />
                     <Button>
-                        <Link href={feedback? `/interview/${interviewId}/feedback` : `/interview/${interviewId}`}>
+                        <Link href={feedback? `/interview/${id}/feedback` : `/interview/${id}`}>
                             {feedback ? "View Feedback" : "Take Interview"}
                         </Link>
                     </Button>
