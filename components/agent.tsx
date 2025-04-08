@@ -33,9 +33,7 @@ const Agent = ({
     const [messages, setMessages] = useState<SavedMessage[]>([]);
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-        console.log("Generate feedback here.");
 
-        //TODO : server action that generates feedback
         const { success, feedbackId: id } = await createFeedBack({
             interviewId: interviewId!,
             userId: userId!,

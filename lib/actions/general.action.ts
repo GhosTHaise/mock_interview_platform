@@ -81,6 +81,8 @@ export async function createFeedBack(params: CreateFeedbackParams) {
         - **Problem-Solving**: Ability to analyze problems and propose solutions.
         - **Cultural & Role Fit**: Alignment with company values and job role.
         - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
+        
+        Please make sure that the response is formatted correctly as json and includes the appropriate score for each category.
         `,
             system:
                 "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
