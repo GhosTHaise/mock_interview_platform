@@ -1,6 +1,7 @@
 "use client";
 
 import { interviewer } from '@/constants';
+import { createFeedBack } from '@/lib/actions/general.action';
 import { cn } from '@/lib/utils';
 import { vapi } from '@/lib/vapi.sdk';
 import Image from 'next/image'
@@ -32,16 +33,15 @@ const Agent = ({
     const [messages, setMessages] = useState<SavedMessage[]>([]);
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-        console.log("Generate feedback here.");
 
-        //TODO : server action that generates feedback
-        const { success, id } = {
-            success: true,
-            id: "feedback-id"
-        }
+        const { success, feedbackId: id } = await createFeedBack({
+            interviewId: interviewId!,
+            userId: userId!,
+            transcript: messages
+        })
 
         if (success && id) {
-            router.push(`interview/${interviewId}/feedback`)
+            router.push(`/${interviewId}/feedback`)
         } else {
             console.log("Error saving feedback");
             router.push("/");
@@ -68,16 +68,16 @@ const Agent = ({
                     userId: userId
                 }
             });
-        }else{
-            let formattedQuestions  = "";
+        } else {
+            let formattedQuestions = "";
 
-            if(questions){
+            if (questions) {
                 formattedQuestions = questions.map((question) => `- ${question}`).join('/n');
             }
 
             await vapi.start(interviewer, {
-                variableValues : {
-                    questions : formattedQuestions,
+                variableValues: {
+                    questions: formattedQuestions,
                 }
             })
         }
