@@ -4,9 +4,11 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./displayTechIcons";
+import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 
-const InterviewCard = ({ createdAt, finalized, id, level, questions, role, techstack, type, userId, }: InterviewCardProps) => {
-    const feedback = null as Feedback | null;
+const InterviewCard = async ({ createdAt, id, role, techstack, type, userId, }: InterviewCardProps) => {
+    const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
+    console.log("🚀 ~ InterviewCard ~ feedback:", feedback , {id , userId})
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
     const formattedDAte = dayjs(feedback?.createdAt || createdAt || Date.now()).format("MMM D, YYYY");
     return (
